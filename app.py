@@ -1,7 +1,7 @@
 import time
 import Adafruit_ADS1x15
-
 import RPi.GPIO as GPIO
+import logging
 
 # GPIO setup
 DIR = 20   # Direction GPIO Pin
@@ -31,12 +31,17 @@ target_pressure = 1000  # Example target pressure value
 integral = 0
 previous_error = 0
 
+# Logging setup
+logging.basicConfig(level=logging.INFO)
+
 def read_pressure():
+    logging.info("Running read_pressure function")
     # Read the ADC channel 0 value
     value = adc.read_adc(0, gain=GAIN)
     return value
 
 def pid_control(current_pressure):
+    logging.info("Running pid_control function")
     global integral, previous_error
     error = target_pressure - current_pressure
     integral += error
@@ -46,6 +51,7 @@ def pid_control(current_pressure):
     return output
 
 def step_motor(steps, direction):
+    logging.info("Running step_motor function")
     GPIO.output(DIR, direction)
     for _ in range(steps):
         GPIO.output(STEP, GPIO.HIGH)
@@ -55,6 +61,7 @@ def step_motor(steps, direction):
 
 try:
     while True:
+        logging.info("Running main loop")
         current_pressure = read_pressure()
         control_signal = pid_control(current_pressure)
         
@@ -66,7 +73,8 @@ try:
         time.sleep(0.1)
 
 except KeyboardInterrupt:
-    print("Program stopped")
+    logging.info("Program stopped by KeyboardInterrupt")
 
 finally:
     GPIO.cleanup()
+    logging.info("GPIO cleanup done")
