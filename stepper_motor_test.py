@@ -1,3 +1,8 @@
+# Success! We used pints 24, 18, 4 to control A3A3B3B4
+# Reading through
+# https://www.waveshare.com/wiki/Stepper_Motor_HAT#Download_Sample_Demo
+# Watched Dan Marcoux video https://www.youtube.com/watch?v=0WQNXruPaqg
+
 from time import sleep
 import sys
 from RpiMotorLib import RpiMotorLib
