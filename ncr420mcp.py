@@ -14,7 +14,7 @@ bus = smbus.SMBus(2)
 # Send configuration command
 #		0x10(16)	Continuous conversion mode, Channel-1, 12-bit Resolution
 
-bus.write_byte(0x68, 0x1a)
+bus.write_byte(0x68, 0x19)
 
 time.sleep(0.5)
 # MCP3426 address, 0x68(104)

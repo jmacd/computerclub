@@ -69,12 +69,10 @@ MCP3428_CONF_GAIN_8X                    = 0x03
 # gain = MCP3428_CONF_GAIN_4X
 VRef = 2.048 # 2.048 Volts
 
-
 # Power on and prepare for general usage.
-def initialize():
-    byte = MCP3428_CONF_RDY | MCP3428_CONF_MODE_CONTINUOUS | MCP3428_CHANNEL_1 | MCP3428_CONF_SIZE_16BIT | MCP3428_CONF_GAIN_2X
-    print("write byte %x" % byte)
-    bus.write_byte(MCP3428_DEFAULT_ADDRESS, byte)
+def get_config():
+    config_byte = MCP3428_CONF_MODE_CONTINUOUS | MCP3428_CHANNEL_1 | MCP3428_CONF_SIZE_16BIT | MCP3428_CONF_GAIN_2X
+    return config_byte
 
 #In read mode ,it indicates the output register has been updated with a new conversion.
 #In one-shot Conversion mode,writing Initiates a new conversion.
@@ -105,8 +103,10 @@ def initialize():
 #using the General Calling method
 
 def getadcread() :
-        data = bus.read_i2c_block_data(MCP3428_DEFAULT_ADDRESS,0x00,6)
-        print("DATA", data)
+        # Unchecked, see
+        # https://github.com/ncdcommunity/Arduino_Library_MCP3428_16Bit_4Channel_ADC/blob/master/MCP3428.cpp
+        data = bus.read_i2c_block_data(MCP3428_DEFAULT_ADDRESS, get_config(), 3)
+        print("raw data %x %x config %x" % (data[0], data[1], data[2]))
         value = ((data[0] << 8) | data[1])
         if (value >= 32768):
                 value = 65536 - value
@@ -140,11 +140,11 @@ def getconvert():
 #     at 4mA the raw ADC value will be around 5813
 #     at 20mA the raw ADC value will be around 29390.
 
-initialize()
-
+counter = 0
 while True:
         time.sleep(0.5)
-        print( "                MCP3428 Readings ")
+        print( "                MCP3428 Readings %d " % counter)
+        counter = counter + 1
 
         voltage = getconvert()
         print( "\nVoltage of the source is :",voltage,"volts\n")
